@@ -1,0 +1,8 @@
+header > ul {
+    display: flex;
+}
+
+header > ul > li {
+    width: 5%;
+    display: block;
+}
