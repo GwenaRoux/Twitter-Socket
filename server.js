@@ -7,6 +7,23 @@ const keys = require('./APIKeys');
 
 app.use('/source', express.static(__dirname + '/client/source/'));
 
+
+////////////////////////database////////////////////////////
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost:27017/mytweets', {useNewUrlParser: true, useUnifiedTopology: true});
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connecting error'));
+
+db.once('open', function () {
+  // we're connected!
+  console.log('DB connected on port 27017');
+});
+
+// Schemas
+const MyTweets = require('./server/models/mytweets');
+////////////////////////database////////////////////////////
+
 var Tweet = new Twit({
   consumer_key:         keys.consumer_key,
   consumer_secret:      keys.consumer_secret,
@@ -20,7 +37,18 @@ stream.on('tweet', function (tweet) {
   io.emit('tweet',{ 'tweet': tweet });
 });
 
-// CREATE ROUTES API
+var streamuser = Tweet.stream('statuses/filter', { follow: ['2558711971'] });
+
+streamuser.on('tweet', function (tweet) {
+  // console.log(tweet.text)
+  var tweetdb = new MyTweets(tweet);
+  tweetdb.save().then(function() {
+    console.log('Object saved with id : ' + tweetdb.id)
+  });
+  io.emit('backgroundcolor',{ 'tweet': tweet.text });
+});
+
+////////////////Api routes/////////////////
 app.get('/', function (req, res) {
   res.sendFile( __dirname +  "/client/index.html" );
 });
@@ -33,7 +61,16 @@ app.get('/mytweets', function (req, res) {
   res.sendFile( __dirname +  "/client/mytweets.html" );
 });
 
-// START server
+app.get('/api/mytweets', function (req, res) {
+  MyTweets.find({}).exec(function (err, myTweetsList) {
+    if (err) {
+      console.log(err)
+    }
+    res.json(myTweetsList);
+  })
+});
+
+//////////////Sever start///////////////////
 server.listen(3000, function () {
   console.log('server listening on http://localhost:3000!')
 });

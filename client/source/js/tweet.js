@@ -2,6 +2,7 @@ const socket = io();
 const cont = document.querySelector('#container');
 // Récupération
 socket.on('tweet', function (tweet) {
+    ////////////Reject if retweet/////////////
     if (!isReply(tweet.tweet) === true) {
         console.log(tweet);
     var tweetbody = {
@@ -12,9 +13,6 @@ socket.on('tweet', function (tweet) {
         'userDescription': tweet.tweet.user.description,
     };
     try {
-        // if(tweet.tweet.entities.media[0].media_url_https) {
-        //     tweetbody['image'] = tweet.tweet.entities.media[0].media_url_https;
-        // }
     } catch(err) { }
         console.log(tweetbody.text);
         /////////////////////////////////////////////
