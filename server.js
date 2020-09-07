@@ -69,6 +69,15 @@ app.get('/api/mytweets', function (req, res) {
     res.json(myTweetsList);
   })
 });
+// 4092632549
+// var bbh = Tweet.stream('statuses/filter', { follow: ['2558711971'] });
+
+streamuser.on('tweet', function (tweet) {
+  console.log(tweet);
+  Tweet.post('statuses/retweet/:id', { id: tweet.id }, function (err, data, response) {
+    console.log(data)
+  });
+});
 
 //////////////Sever start///////////////////
 server.listen(3000, function () {
