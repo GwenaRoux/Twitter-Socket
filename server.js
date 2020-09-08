@@ -38,7 +38,7 @@ stream.on('tweet', function (tweet) {
   io.emit('tweet',{ 'tweet': tweet });
 });
 
-var streamuser = Tweet.stream('statuses/filter', { follow: [twitterIds.me] });
+var streamuser = Tweet.stream('statuses/filter', { follow: [twitterIds.myid] });
 ////////////////////Store my tweets in the DB and emit the color to mytweets.html/////////////////////////////
 // streamuser.on('tweet', function (tweet) {
 //   console.log(tweet.text)
